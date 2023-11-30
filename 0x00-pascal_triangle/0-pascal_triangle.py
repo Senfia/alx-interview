@@ -2,6 +2,7 @@
 '''Pascal's triangle.
 '''
 
+
 def pascal_triangle(n):
     '''returns a list of lists of integers representing
        the Pascal’s triangle of n
@@ -9,7 +10,7 @@ def pascal_triangle(n):
     triangle = []
     if type(n) is not int or n <= 0:
         return triangle
-    
+
     i = 0
     while i < n:
         line = []
@@ -22,5 +23,5 @@ def pascal_triangle(n):
             j += 1
         triangle.append(line)
         i += 1
-    
+
     return triangle
