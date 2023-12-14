@@ -4,7 +4,7 @@ to result in exactly n H characters in the file.
 '''
 
 
-def min_operations(n):
+def minOperations(n):
     '''Returns an integer.
     If n is imposible to achieve, return 0
     '''
