@@ -8,7 +8,7 @@ def min_operations(n):
     '''Returns an integer.
     If n is imposible to achieve, return 0
     '''
-    if n <= 1:
+    if not isinstance(n, int):
         return 0
 
     factors = []
