@@ -8,7 +8,8 @@ import re
 def process_line(line):
     '''Process a line and extract relevant information'''
     pt = re.compile(
-             r'(\d+\.\d+\.\d+\.\d+) - \[.*\] "GET /projects/260 HTTP/1.1" (\d+) (\d+)'
+             r'(\d+\.\d+\.\d+\.\d+) - \[.*\]'
+             r'\s* "GET /projects/260 HTTP/1.1" (\d+) (\d+)'
     )
     match = pt.match(line)
     if match:
