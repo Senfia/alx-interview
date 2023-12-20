@@ -1,50 +1,88 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 '''Module to read stdin line by line and computes metrics.
 '''
-import sys
 import re
 
 
 def process_line(line):
-    '''Process a line and extract relevant information'''
-    pt = re.compile(
-             r'\s*(\d+\.\d+\.\d+\.\d+) - \[.*\]'
-             r'\s*"GET /projects/260 HTTP/1.1" (\d+) (\d+)'
+    '''Process a line and extract relevant information
+    '''
+    fp = (
+        r'\s*(?P<ip>\S+)\s*',
+        r'\s*\[(?P<date>\d+\-\d+\-\d+ \d+:\d+:\d+\.\d+)\]',
+        r'\s*"(?P<request>[^"]*)"\s*',
+        r'\s*(?P<status_code>\S+)',
+        r'\s*(?P<file_size>\d+)'
     )
-    match = pt.match(line)
-    if match:
-        ip_address, stat_code, file_size = match.groups()
-        return ip_address, int(stat_code), int(file_size)
-    else:
-        return None
+    info = {
+        'status_code': 0,
+        'file_size': 0,
+    }
+    long_fmt = '{}\\-{}{}{}{}\\s*'.format(fp[0], fp[1], fp[2], fp[3], fp[4])
+    match = re.fullmatch(long_fmt, line)
+    if match is not None:
+        status_code = match.group('status_code')
+        file_size = int(match.group('file_size'))
+        info['status_code'] = status_code
+        info['file_size'] = file_size
+    return info
 
 
-def print_statistics(total_size, stat_counts):
-    '''Print computed statistics'''
-    print(f'Total file size: {total_size}')
+def print_statistics(total_file_size, status_codes_stats):
+    '''Print computed statistics.
+    '''
+    print('File size: {:d}'.format(total_file_size), flush=True)
+    for status_code in sorted(status_codes_stats.keys()):
+        num = status_codes_stats.get(status_code, 0)
+        if num > 0:
+            print('{:s}: {:d}'.format(status_code, num), flush=True)
 
-    for stat_code in sorted(stat_counts.keys()):
-        print(f'{stat_code}: {stat_counts[stat_code]}')
+
+def update_metrics(line, total_file_size, status_codes_stats):
+    '''Updates the metrics from a given HTTP request log.
+
+    Args:
+        line (str): The line of input from which to retrieve the metrics.
+
+    Returns:
+        int: The new total file size.
+    '''
+    line_info = process_line(line)
+    status_code = line_info.get('status_code', '0')
+    if status_code in status_codes_stats.keys():
+        status_codes_stats[status_code] += 1
+    return total_file_size + line_info['file_size']
 
 
-def main():
-    total_size = 0
-    stat_counts = {}
-
+def run():
+    '''Starts the log parser.
+    '''
+    line_num = 0
+    total_file_size = 0
+    status_codes_stats = {
+        '200': 0,
+        '301': 0,
+        '400': 0,
+        '401': 0,
+        '403': 0,
+        '404': 0,
+        '405': 0,
+        '500': 0,
+    }
     try:
-        for line_number, line in enumerate(sys.stdin, start=1):
-            data = process_line(line)
-            if data:
-                _, stat_code, file_size = data
-                total_size += file_size
-                stat_counts[stat_code] = stat_counts.get(stat_code, 0) + 1
+        while True:
+            line = input()
+            total_file_size = update_metrics(
+                line,
+                total_file_size,
+                status_codes_stats,
+            )
+            line_num += 1
+            if line_num % 10 == 0:
+                print_statistics(total_file_size, status_codes_stats)
+    except (KeyboardInterrupt, EOFError):
+        print_statistics(total_file_size, status_codes_stats)
 
-            if line_number % 10 == 0:
-                print_statistics(total_size, stat_counts)
 
-    except KeyboardInterrupt:
-        print_statistics(total_size, stat_counts)
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    run()
