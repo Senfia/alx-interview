@@ -4,7 +4,7 @@
 import sys
 
 
-solution = []
+solutions = []
 
 n = 0
 '''Size of the chessboard.
@@ -42,8 +42,8 @@ def is_attacking(opts0, opts1):
 def group_exists(group):
     '''Verifies if a group is present in the list of solution.
     '''
-    global solution
-    for stn in solution:
+    global solutions
+    for stn in solutions:
         i = 0
         for stn_opts in stn:
             for grp_opts in group:
@@ -57,12 +57,12 @@ def group_exists(group):
 def build_solution(row, group):
     '''Develops a solution for the N-Queens problem.
     '''
-    global solution
+    global solutions
     global n
     if row == n:
         temp0 = group.copy()
         if not group_exists(temp0):
-            solution.append(temp0)
+            solutions.append(temp0)
     else:
         for col in range(n):
             a = (row * n) + col
