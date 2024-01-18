@@ -34,4 +34,3 @@ if (process.argv.length > 2) {
 } else {
   console.error('Usage: node script.js <film_id>');
 }
-
