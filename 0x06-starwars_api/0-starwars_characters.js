@@ -20,11 +20,11 @@ if (process.argv.length > 2) {
     }
   });
 
-  async function fetchCharacterName(url) {
+  async function fetchCharacterName (url) {
     return new Promise((resolve, reject) => {
       request(url, (err, _, charactersReqBody) => {
         if (err) {
-          reject(`Error fetching character details from ${url}: ${err}`);
+          reject(new Error(`Error fetching character details from ${url}: ${err}`));
         } else {
           resolve(JSON.parse(charactersReqBody).name);
         }
