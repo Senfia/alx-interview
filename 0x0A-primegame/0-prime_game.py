@@ -16,6 +16,9 @@ def is_prime(num):
 
 
 def simulate_game(n):
+    '''
+    Game simulation
+    '''
     primes = [i for i in range(2, n+1) if is_prime(i)]
     turn = 0  # 0 for Maria, 1 for Ben
     while True:
@@ -38,6 +41,9 @@ def simulate_game(n):
 
 
 def isWinner(x, nums):
+    '''
+    Winner functions: Retuns the winner of the game
+    '''
     maria_wins = 0
     ben_wins = 0
     for n in nums:
